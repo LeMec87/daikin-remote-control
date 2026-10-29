@@ -17,26 +17,28 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DaikinRemoteConfigEntry
 from .const import (
+    CEILING,
     COOL_MAX_TEMP,
     COOL_MIN_TEMP,
     DOMAIN,
     FAN_SPEEDS,
-    HORIZONTAL_CENTER,
+    HORIZONTAL,
     INDOOR_HUMIDITY,
     INDOOR_TEMP,
     MODE,
     MODE_COOL,
     MODE_DRY,
     MODE_FAN,
+    MOLD_PROOF,
     POWER,
-    SWING_ON,
-    VERTICAL_MIDDLE,
+    POWERFUL,
+    STREAMER,
+    VERTICAL,
 )
 from .entity import DaikinRemoteEntity
 from .sensor import signed_byte
 
 HVAC_MODES = {MODE_COOL: HVACMode.COOL, MODE_DRY: HVACMode.DRY, MODE_FAN: HVACMode.FAN_ONLY}
-SWING_OFF, SWING_VERTICAL, SWING_HORIZONTAL, SWING_BOTH = "Off", "Vertical", "Horizontal", "3D"
 
 
 async def async_setup_entry(
@@ -46,6 +48,9 @@ async def async_setup_entry(
 
 
 class DaikinClimate(DaikinRemoteEntity, ClimateEntity):
+    """Swing mode holds the vertical flap position, horizontal swing mode the louvre position,
+    so that every airflow setting of the remote is available in the climate dialog."""
+
     _attr_name = None
     _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_target_temperature_step = 0.5
@@ -53,11 +58,13 @@ class DaikinClimate(DaikinRemoteEntity, ClimateEntity):
     _attr_max_temp = COOL_MAX_TEMP
     _attr_hvac_modes = [HVACMode.OFF, *HVAC_MODES.values()]
     _attr_fan_modes = list(FAN_SPEEDS.values())
-    _attr_swing_modes = [SWING_OFF, SWING_VERTICAL, SWING_HORIZONTAL, SWING_BOTH]
+    _attr_swing_modes = [*VERTICAL.values(), CEILING]
+    _attr_swing_horizontal_modes = list(HORIZONTAL.values())
     _attr_supported_features = (
         ClimateEntityFeature.TARGET_TEMPERATURE
         | ClimateEntityFeature.FAN_MODE
         | ClimateEntityFeature.SWING_MODE
+        | ClimateEntityFeature.SWING_HORIZONTAL_MODE
         | ClimateEntityFeature.TURN_ON
         | ClimateEntityFeature.TURN_OFF
     )
@@ -87,14 +94,21 @@ class DaikinClimate(DaikinRemoteEntity, ClimateEntity):
         return FAN_SPEEDS.get(self.coordinator.value("fan") or "")
 
     @property
-    def swing_mode(self) -> str:
-        vertical = (self.coordinator.value("vertical") or "").startswith(SWING_ON)
-        horizontal = (self.coordinator.value("horizontal") or "").startswith(SWING_ON)
-        if vertical and horizontal:
-            return SWING_BOTH
-        if vertical:
-            return SWING_VERTICAL
-        return SWING_HORIZONTAL if horizontal else SWING_OFF
+    def swing_mode(self) -> str | None:
+        return self.coordinator.vertical_option
+
+    @property
+    def swing_horizontal_mode(self) -> str | None:
+        return self.coordinator.horizontal_option
+
+    @property
+    def extra_state_attributes(self) -> dict[str, bool]:
+        c = self.coordinator
+        return {
+            "mold_proof": c.is_on(MOLD_PROOF),
+            "streamer": c.is_on(STREAMER),
+            "powerful": c.is_on(POWERFUL),
+        }
 
     async def async_set_hvac_mode(self, hvac_mode: HVACMode) -> None:
         if hvac_mode == HVACMode.OFF:
@@ -132,15 +146,7 @@ class DaikinClimate(DaikinRemoteEntity, ClimateEntity):
         await self.coordinator.write({point: {v: k for k, v in FAN_SPEEDS.items()}[fan_mode]})
 
     async def async_set_swing_mode(self, swing_mode: str) -> None:
-        c = self.coordinator
-        vertical, horizontal = c.value("vertical") or "", c.value("horizontal") or ""
-        want_v = swing_mode in (SWING_VERTICAL, SWING_BOTH)
-        want_h = swing_mode in (SWING_HORIZONTAL, SWING_BOTH)
-        changes: dict[str, str] = {}
-        # Swing on sets the axis to 0F; swing off moves a swinging axis to its middle position
-        if want_v != vertical.startswith(SWING_ON):
-            changes[c.point("vertical")] = "0F000000" if want_v else VERTICAL_MIDDLE
-        if want_h != horizontal.startswith(SWING_ON):
-            changes[c.point("horizontal")] = "0F0000" if want_h else HORIZONTAL_CENTER
-        if changes:
-            await c.write(changes)
+        await self.coordinator.set_vertical(swing_mode)
+
+    async def async_set_swing_horizontal_mode(self, swing_horizontal_mode: str) -> None:
+        await self.coordinator.set_horizontal(swing_horizontal_mode)

@@ -29,7 +29,7 @@ the unit does not answer.
 
 | Entity | Type | Function |
 |---|---|---|
-| *(device name)* | `climate` | Off, Cool, Dry, Fan only; target temperature 18–32 °C (cool only); fan Auto, Quiet, 1–5; swing Off, Vertical, Horizontal, 3D |
+| *(device name)* | `climate` | Off, Cool, Dry, Fan only; target temperature 18–32 °C (cool only); fan Auto, Quiet, 1–5; swing mode = airflow up/down, horizontal swing mode = airflow left/right (same positions as the selects below); attributes Mold proof, Streamer, Powerful |
 | Airflow up/down | `select` | Highest, High, Middle, Low, Lowest, Swing, Ceiling |
 | Airflow left/right | `select` | Far left … Far right, Swing, Intelligent Eye |
 | Mold proof | `switch` | On/Off |
@@ -42,6 +42,10 @@ the unit does not answer.
 The unit does not accept Streamer, Powerful, Econo or Outdoor Quiet over Wi-Fi; these can only be
 switched with the remote. The unit does not report which direction Intelligent Eye is currently
 blowing. Dry mode has no target temperature and no fan speed setting.
+
+All airflow settings are available directly in the climate dialog: *Swing mode* sets the
+vertical flap, *Horizontal swing mode* the louvres. The select entities offer the same positions
+for dashboards and automations.
 
 The unit is polled regularly (default: every 15 seconds) so that changes made with the remote
 show up in Home Assistant.

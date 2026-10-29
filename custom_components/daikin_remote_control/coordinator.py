@@ -12,7 +12,17 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import DaikinDsiot, DaikinError
-from .const import CEILING_AIRFLOW, DOMAIN, MODE, MODE_COOL, MODE_POINTS, POWER
+from .const import (
+    CEILING,
+    CEILING_AIRFLOW,
+    DOMAIN,
+    HORIZONTAL,
+    MODE,
+    MODE_COOL,
+    MODE_POINTS,
+    POWER,
+    VERTICAL,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +62,26 @@ class DaikinRemoteCoordinator(DataUpdateCoordinator[dict[str, str]]):
 
     def is_on(self, path: str) -> bool:
         return self.data.get(path) == "01"
+
+    @property
+    def vertical_option(self) -> str | None:
+        return CEILING if self.ceiling else VERTICAL.get(self.value("vertical") or "")
+
+    @property
+    def horizontal_option(self) -> str | None:
+        return HORIZONTAL.get(self.value("horizontal") or "")
+
+    async def set_vertical(self, option: str) -> None:
+        if option == CEILING:
+            changes = {CEILING_AIRFLOW: "01"}
+        else:
+            changes = {self.point("vertical"): {v: k for k, v in VERTICAL.items()}[option]}
+            if self.ceiling:  # End ceiling airflow first, otherwise the flap stays up
+                changes[CEILING_AIRFLOW] = "00"
+        await self.write(changes)
+
+    async def set_horizontal(self, option: str) -> None:
+        await self.write({self.point("horizontal"): {v: k for k, v in HORIZONTAL.items()}[option]})
 
     async def write(self, changes: dict[str, str]) -> None:
         try:

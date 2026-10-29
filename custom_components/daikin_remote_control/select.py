@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DaikinRemoteConfigEntry
-from .const import CEILING, CEILING_AIRFLOW, HORIZONTAL, VERTICAL
+from .const import CEILING, HORIZONTAL, VERTICAL
 from .entity import DaikinRemoteEntity
 
 
@@ -24,18 +24,10 @@ class VerticalAirflow(DaikinRemoteEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        c = self.coordinator
-        return CEILING if c.ceiling else VERTICAL.get(c.value("vertical") or "")
+        return self.coordinator.vertical_option
 
     async def async_select_option(self, option: str) -> None:
-        c = self.coordinator
-        if option == CEILING:
-            changes = {CEILING_AIRFLOW: "01"}
-        else:
-            changes = {c.point("vertical"): {v: k for k, v in VERTICAL.items()}[option]}
-            if c.ceiling:  # End ceiling airflow first, otherwise the flap stays up
-                changes[CEILING_AIRFLOW] = "00"
-        await c.write(changes)
+        await self.coordinator.set_vertical(option)
 
 
 class HorizontalAirflow(DaikinRemoteEntity, SelectEntity):
@@ -44,8 +36,7 @@ class HorizontalAirflow(DaikinRemoteEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        return HORIZONTAL.get(self.coordinator.value("horizontal") or "")
+        return self.coordinator.horizontal_option
 
     async def async_select_option(self, option: str) -> None:
-        c = self.coordinator
-        await c.write({c.point("horizontal"): {v: k for k, v in HORIZONTAL.items()}[option]})
+        await self.coordinator.set_horizontal(option)

@@ -79,6 +79,70 @@
       "outdoor_temperature": {
         "name": "Outdoor temperature"
       }
+    },
+    "climate": {
+      "climate": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Auto",
+              "quiet": "Quiet",
+              "1": "1",
+              "2": "2",
+              "3": "3",
+              "4": "4",
+              "5": "5"
+            }
+          },
+          "swing_mode": {
+            "name": "Airflow up/down",
+            "state": {
+              "highest": "Highest",
+              "high": "High",
+              "middle": "Middle",
+              "low": "Low",
+              "lowest": "Lowest",
+              "swing": "Swing",
+              "ceiling": "Ceiling"
+            }
+          },
+          "swing_horizontal_mode": {
+            "name": "Airflow left/right",
+            "state": {
+              "far_left": "Far left",
+              "left": "Left",
+              "left_center": "Left of center",
+              "center": "Center",
+              "right_center": "Right of center",
+              "right": "Right",
+              "far_right": "Far right",
+              "swing": "Swing",
+              "intelligent_eye": "Intelligent Eye"
+            }
+          },
+          "mold_proof": {
+            "name": "Mold proof",
+            "state": {
+              "true": "On",
+              "false": "Off"
+            }
+          },
+          "streamer": {
+            "name": "Streamer",
+            "state": {
+              "true": "On",
+              "false": "Off"
+            }
+          },
+          "powerful": {
+            "name": "Powerful",
+            "state": {
+              "true": "On",
+              "false": "Off"
+            }
+          }
+        }
+      }
     }
   },
   "exceptions": {

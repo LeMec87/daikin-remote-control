@@ -79,6 +79,70 @@
       "outdoor_temperature": {
         "name": "Außentemperatur"
       }
+    },
+    "climate": {
+      "climate": {
+        "state_attributes": {
+          "fan_mode": {
+            "state": {
+              "auto": "Auto",
+              "quiet": "Leise",
+              "1": "1",
+              "2": "2",
+              "3": "3",
+              "4": "4",
+              "5": "5"
+            }
+          },
+          "swing_mode": {
+            "name": "Luft oben/unten",
+            "state": {
+              "highest": "Ganz oben",
+              "high": "Oben",
+              "middle": "Mitte",
+              "low": "Unten",
+              "lowest": "Ganz unten",
+              "swing": "Schwenken",
+              "ceiling": "Zur Decke"
+            }
+          },
+          "swing_horizontal_mode": {
+            "name": "Luft links/rechts",
+            "state": {
+              "far_left": "Ganz links",
+              "left": "Links",
+              "left_center": "Halb links",
+              "center": "Mitte",
+              "right_center": "Halb rechts",
+              "right": "Rechts",
+              "far_right": "Ganz rechts",
+              "swing": "Schwenken",
+              "intelligent_eye": "Intelligent Eye"
+            }
+          },
+          "mold_proof": {
+            "name": "Schimmelschutz",
+            "state": {
+              "true": "An",
+              "false": "Aus"
+            }
+          },
+          "streamer": {
+            "name": "Streamer",
+            "state": {
+              "true": "An",
+              "false": "Aus"
+            }
+          },
+          "powerful": {
+            "name": "Powerful",
+            "state": {
+              "true": "An",
+              "false": "Aus"
+            }
+          }
+        }
+      }
     }
   },
   "exceptions": {

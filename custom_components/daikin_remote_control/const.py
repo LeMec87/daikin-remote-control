@@ -50,16 +50,14 @@ COOL_MIN_TEMP = 18.0
 COOL_MAX_TEMP = 32.0
 
 FAN_SPEEDS = {
-    "0A00": "Auto",
-    "0B00": "Quiet",
+    "0A00": "auto",
+    "0B00": "quiet",
     "0300": "1",
     "0400": "2",
     "0500": "3",
     "0600": "4",
     "0700": "5",
 }
-
-SWING_ON = "0F"
 
 # Vertical flap positions
 VERTICAL = {
@@ -70,7 +68,6 @@ VERTICAL = {
     "05000000": "lowest",
     "0F000000": "swing",
 }
-VERTICAL_MIDDLE = "03000000"
 CEILING = "ceiling"  # Ceiling airflow is a separate flag, see CEILING_AIRFLOW
 
 # Horizontal louvre positions
@@ -85,4 +82,3 @@ HORIZONTAL = {
     "0F0000": "swing",
     "100000": "intelligent_eye",
 }
-HORIZONTAL_CENTER = "050000"
