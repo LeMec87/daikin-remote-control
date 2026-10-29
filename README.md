@@ -53,6 +53,10 @@ Tip: give the unit a fixed IP address in your router, so the integration keeps f
 
 ## Installation via HACS
 
+> **Note:** This is an integration, not an app (add-on). Adding the repository under
+> Settings → Apps → Repositories fails with *"is not a valid app repository"*. Add it in
+> **HACS** as described below.
+
 1. HACS → menu in the top right → **Custom repositories**
 2. Add `https://github.com/LeMec87/daikin-remote-control` with type **Integration**
 3. Download **Daikin Remote Control** and restart Home Assistant
