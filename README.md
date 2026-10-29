@@ -4,7 +4,28 @@ Standalone Home Assistant integration for Daikin air conditioners with a Wi-Fi a
 speaks the **dsiot API** (`POST /dsiot/multireq`). It covers everything the remote control can
 switch over Wi-Fi, so the built-in Daikin integration is not needed.
 
-Tested with an **FTKZ25VVMV** (remote ARC466A63, cooling only).
+[![Validate](https://github.com/LeMec87/daikin-remote-control/actions/workflows/validate.yml/badge.svg)](https://github.com/LeMec87/daikin-remote-control/actions/workflows/validate.yml)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz/docs/faq/custom_repositories)
+
+Everything runs locally: no cloud account, no Daikin app, no internet connection needed.
+
+## Supported units
+
+| Indoor unit | Remote | Status |
+|---|---|---|
+| FTKZ25VVMV (cooling only) | ARC466A63 | tested |
+
+Other Daikin units with a dsiot Wi-Fi adapter (firmware 2.8 and newer) will probably work for
+power, mode, temperature and fan, but the airflow positions and extra functions may differ.
+Please [report your model](https://github.com/LeMec87/daikin-remote-control/issues/new?template=new_model.md),
+whether it works or not.
+
+To check whether your adapter speaks the dsiot API, run the `curl` command from the
+[model report template](.github/ISSUE_TEMPLATE/new_model.md). A JSON answer with `responses`
+means the unit is compatible. The integration setup also tests the connection and tells you if
+the unit does not answer.
+
+## Features
 
 | Entity | Type | Function |
 |---|---|---|
@@ -28,6 +49,8 @@ show up in Home Assistant.
 If the built-in Daikin integration is set up for the same unit, remove it to avoid two
 integrations controlling one device.
 
+Tip: give the unit a fixed IP address in your router, so the integration keeps finding it.
+
 ## Installation via HACS
 
 1. HACS → menu in the top right → **Custom repositories**
@@ -38,6 +61,11 @@ integrations controlling one device.
 
 The polling interval can be changed afterwards under **Configure** (5 to 300 seconds).
 Entity names are available in English and German.
+
+### Manual installation
+
+Copy `custom_components/daikin_remote_control` into the `custom_components` folder of your
+Home Assistant configuration and restart Home Assistant.
 
 ## Data points
 
@@ -61,3 +89,18 @@ Paths below `dgc_status`. `e_1002` is the indoor unit (`adr_0100`), `e_1003` the
 | Outdoor temperature | `e_1003/e_A00D/p_01` | signed little-endian, half degrees |
 
 Writes use `op 3` on the indoor unit; the unit confirms with `rsc 2004`.
+
+## Contributing
+
+Pull requests and model reports are welcome. The data points above were found by pressing each
+button on the remote and comparing the unit's state before and after; the same method works for
+other models.
+
+## Credits
+
+The per-mode data points for temperature, fan and swing follow
+[pydaikin](https://github.com/fredrike/pydaikin), which the built-in Daikin integration uses.
+
+## License
+
+[MIT](LICENSE)
