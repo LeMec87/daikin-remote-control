@@ -2,7 +2,7 @@
   "config": {
     "step": {
       "user": {
-        "title": "Daikin Extra",
+        "title": "Daikin Remote Control",
         "description": "IP-Adresse des Daikin-WLAN-Adapters (dsiot-API).",
         "data": {
           "host": "Host",
@@ -20,7 +20,7 @@
   "options": {
     "step": {
       "init": {
-        "title": "Daikin Extra",
+        "title": "Daikin Remote Control",
         "data": {
           "scan_interval": "Abfrage alle … Sekunden"
         }

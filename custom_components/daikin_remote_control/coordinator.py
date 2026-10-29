@@ -1,4 +1,4 @@
-"""Liest die Anlage regelmäßig, damit Änderungen über die Fernbedienung ankommen."""
+"""Polls the unit so that changes made with the remote show up in Home Assistant."""
 
 from __future__ import annotations
 
@@ -12,30 +12,30 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .api import DaikinDsiot, DaikinFehler
+from .api import DaikinDsiot, DaikinError
 from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
 
-class DaikinExtraCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    def __init__(self, hass: HomeAssistant, eintrag: ConfigEntry, api: DaikinDsiot, takt: int) -> None:
+class DaikinRemoteCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    def __init__(self, hass: HomeAssistant, entry: ConfigEntry, api: DaikinDsiot, interval: int) -> None:
         super().__init__(
-            hass, _LOGGER, config_entry=eintrag, name=DOMAIN, update_interval=timedelta(seconds=takt)
+            hass, _LOGGER, config_entry=entry, name=DOMAIN, update_interval=timedelta(seconds=interval)
         )
         self.api = api
 
     async def _async_update_data(self) -> dict[str, Any]:
         try:
-            return await self.api.lesen()
-        except DaikinFehler as err:
+            return await self.api.read()
+        except DaikinError as err:
             raise UpdateFailed(str(err)) from err
 
-    async def schreiben(self, gruppen: dict[str, dict[str, str]]) -> None:
+    async def write(self, groups: dict[str, dict[str, str]]) -> None:
         try:
-            await self.api.schreiben(gruppen)
-        except DaikinFehler as err:
+            await self.api.write(groups)
+        except DaikinError as err:
             raise HomeAssistantError(str(err)) from err
-        # Die Anlage übernimmt Werte mit kurzer Verzögerung
+        # The unit applies new values with a short delay
         await asyncio.sleep(2)
         await self.async_request_refresh()
