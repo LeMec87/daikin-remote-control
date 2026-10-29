@@ -68,6 +68,25 @@
       "powerful": {
         "name": "Powerful"
       }
+    },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Innentemperatur"
+      },
+      "indoor_humidity": {
+        "name": "Luftfeuchtigkeit innen"
+      },
+      "outdoor_temperature": {
+        "name": "Außentemperatur"
+      }
+    }
+  },
+  "exceptions": {
+    "no_target_temperature": {
+      "message": "Eine Zieltemperatur gibt es nur im Modus Kühlen."
+    },
+    "no_fan_speed": {
+      "message": "Im Modus Entfeuchten lässt sich der Lüfter nicht einstellen."
     }
   }
 }

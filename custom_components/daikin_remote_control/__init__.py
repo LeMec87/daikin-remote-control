@@ -1,4 +1,4 @@
-"""Daikin Remote Control: remote functions the built-in Daikin integration does not offer."""
+"""Daikin Remote Control: standalone control of Daikin air conditioners with a dsiot Wi-Fi adapter."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from .api import DaikinDsiot
 from .const import DEFAULT_SCAN_INTERVAL
 from .coordinator import DaikinRemoteCoordinator
 
-PLATFORMS = [Platform.BINARY_SENSOR, Platform.SELECT, Platform.SWITCH]
+PLATFORMS = [Platform.BINARY_SENSOR, Platform.CLIMATE, Platform.SELECT, Platform.SENSOR, Platform.SWITCH]
 
 type DaikinRemoteConfigEntry = ConfigEntry[DaikinRemoteCoordinator]
 

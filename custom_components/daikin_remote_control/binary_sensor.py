@@ -7,6 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DaikinRemoteConfigEntry
+from .const import POWERFUL, STREAMER
 from .coordinator import DaikinRemoteCoordinator
 from .entity import DaikinRemoteEntity
 
@@ -16,17 +17,17 @@ async def async_setup_entry(
 ) -> None:
     c = entry.runtime_data
     async_add_entities([
-        StatusSensor(c, "streamer", "mdi:creation"),
-        StatusSensor(c, "powerful", "mdi:arm-flex"),
+        StatusSensor(c, "streamer", STREAMER, "mdi:creation"),
+        StatusSensor(c, "powerful", POWERFUL, "mdi:arm-flex"),
     ])
 
 
 class StatusSensor(DaikinRemoteEntity, BinarySensorEntity):
-    def __init__(self, coordinator: DaikinRemoteCoordinator, key: str, icon: str) -> None:
+    def __init__(self, coordinator: DaikinRemoteCoordinator, key: str, path: str, icon: str) -> None:
         super().__init__(coordinator, key)
-        self._key = key
+        self._path = path
         self._attr_icon = icon
 
     @property
     def is_on(self) -> bool:
-        return self.coordinator.data[self._key]
+        return self.coordinator.is_on(self._path)

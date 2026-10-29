@@ -68,6 +68,25 @@
       "powerful": {
         "name": "Powerful"
       }
+    },
+    "sensor": {
+      "indoor_temperature": {
+        "name": "Indoor temperature"
+      },
+      "indoor_humidity": {
+        "name": "Indoor humidity"
+      },
+      "outdoor_temperature": {
+        "name": "Outdoor temperature"
+      }
+    }
+  },
+  "exceptions": {
+    "no_target_temperature": {
+      "message": "A target temperature can only be set in cool mode."
+    },
+    "no_fan_speed": {
+      "message": "The fan speed cannot be changed in dry mode."
     }
   }
 }

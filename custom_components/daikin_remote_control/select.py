@@ -7,7 +7,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DaikinRemoteConfigEntry
-from .const import CEILING, HORIZONTAL, VERTICAL
+from .const import CEILING, CEILING_AIRFLOW, HORIZONTAL, VERTICAL
 from .entity import DaikinRemoteEntity
 
 
@@ -24,17 +24,18 @@ class VerticalAirflow(DaikinRemoteEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        d = self.coordinator.data
-        return CEILING if d["ceiling"] else VERTICAL.get(d["p05"])
+        c = self.coordinator
+        return CEILING if c.ceiling else VERTICAL.get(c.value("vertical") or "")
 
     async def async_select_option(self, option: str) -> None:
+        c = self.coordinator
         if option == CEILING:
-            groups = {"e_3003": {"p_1D": "01"}}
+            changes = {CEILING_AIRFLOW: "01"}
         else:
-            groups = {"e_3001": {"p_05": {v: k for k, v in VERTICAL.items()}[option]}}
-            if self.coordinator.data["ceiling"]:  # End ceiling airflow first, otherwise the flap stays up
-                groups["e_3003"] = {"p_1D": "00"}
-        await self.coordinator.write(groups)
+            changes = {c.point("vertical"): {v: k for k, v in VERTICAL.items()}[option]}
+            if c.ceiling:  # End ceiling airflow first, otherwise the flap stays up
+                changes[CEILING_AIRFLOW] = "00"
+        await c.write(changes)
 
 
 class HorizontalAirflow(DaikinRemoteEntity, SelectEntity):
@@ -43,8 +44,8 @@ class HorizontalAirflow(DaikinRemoteEntity, SelectEntity):
 
     @property
     def current_option(self) -> str | None:
-        return HORIZONTAL.get(self.coordinator.data["p06"])
+        return HORIZONTAL.get(self.coordinator.value("horizontal") or "")
 
     async def async_select_option(self, option: str) -> None:
-        value = {v: k for k, v in HORIZONTAL.items()}[option]
-        await self.coordinator.write({"e_3001": {"p_06": value}})
+        c = self.coordinator
+        await c.write({c.point("horizontal"): {v: k for k, v in HORIZONTAL.items()}[option]})

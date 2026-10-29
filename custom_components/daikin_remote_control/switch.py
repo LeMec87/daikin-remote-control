@@ -9,6 +9,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import DaikinRemoteConfigEntry
+from .const import MOLD_PROOF
 from .entity import DaikinRemoteEntity
 
 
@@ -23,10 +24,10 @@ class MoldProof(DaikinRemoteEntity, SwitchEntity):
 
     @property
     def is_on(self) -> bool:
-        return self.coordinator.data["mold_proof"]
+        return self.coordinator.is_on(MOLD_PROOF)
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        await self.coordinator.write({"e_3003": {"p_4D": "01"}})
+        await self.coordinator.write({MOLD_PROOF: "01"})
 
     async def async_turn_off(self, **kwargs: Any) -> None:
-        await self.coordinator.write({"e_3003": {"p_4D": "00"}})
+        await self.coordinator.write({MOLD_PROOF: "00"})

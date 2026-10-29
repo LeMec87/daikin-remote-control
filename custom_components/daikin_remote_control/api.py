@@ -28,16 +28,17 @@ class DaikinDsiot:
         except (aiohttp.ClientError, TimeoutError, ValueError) as err:
             raise DaikinError(str(err)) from err
 
-    async def read(self) -> dict[str, Any]:
+    async def read(self) -> dict[str, str]:
+        """Return all values keyed by their path below dgc_status, e.g. "e_1002/e_3001/p_05"."""
         response = await self._request([{"op": 2, "to": INDOOR}, {"op": 2, "to": OUTDOOR}])
         values: dict[str, str] = {}
 
         def walk(node: Any, path: str) -> None:
             if not isinstance(node, dict):
                 return
-            p = f"{path}/{node['pn']}" if "pn" in node else path
+            p = f"{path}/{node['pn']}" if path else node.get("pn", "")
             if "pv" in node and not isinstance(node["pv"], (dict, list)):
-                values[p] = node["pv"]
+                values[p.removeprefix("dgc_status/")] = node["pv"]
             for key in ("pch", "pc"):
                 x = node.get(key)
                 for child in x if isinstance(x, list) else [x] if isinstance(x, dict) else []:
@@ -47,25 +48,26 @@ class DaikinDsiot:
             walk(part.get("pc", {}), "")
         if not values:
             raise DaikinError("Empty response")
-        return {
-            "power": values.get("/dgc_status/e_1002/e_A002/p_01") == "01",
-            "p05": values.get("/dgc_status/e_1002/e_3001/p_05"),
-            "p06": values.get("/dgc_status/e_1002/e_3001/p_06"),
-            "ceiling": values.get("/dgc_status/e_1002/e_3003/p_1D") == "01",
-            "mold_proof": values.get("/dgc_status/e_1002/e_3003/p_4D") == "01",
-            "streamer": values.get("/dgc_status/e_1002/e_3003/p_20") == "01",
-            "powerful": values.get("/dgc_status/e_1003/e_3002/p_44") == "01",
-        }
+        return values
 
-    async def write(self, groups: dict[str, dict[str, str]]) -> None:
-        """groups: {"e_3001": {"p_05": "01000000"}, ...} on the indoor unit (e_1002)."""
-        pch = [
-            {"pn": g, "pch": [{"pn": p, "pv": v} for p, v in values.items()]}
-            for g, values in groups.items()
-        ]
+    async def write(self, changes: dict[str, str]) -> None:
+        """changes: {"e_1002/e_3001/p_05": "01000000", ...}; only indoor (e_1002) points are writable."""
+        tree: dict = {}
+        for path, value in changes.items():
+            node = tree
+            for part in path.split("/")[:-1]:
+                node = node.setdefault(part, {})
+            node[path.split("/")[-1]] = value
+
+        def build(node: dict) -> list[dict]:
+            return [
+                {"pn": k, "pch": build(v)} if isinstance(v, dict) else {"pn": k, "pv": v}
+                for k, v in node.items()
+            ]
+
         response = await self._request(
-            [{"op": 3, "to": INDOOR, "pc": {"pn": "dgc_status", "pch": [{"pn": "e_1002", "pch": pch}]}}]
+            [{"op": 3, "to": INDOOR, "pc": {"pn": "dgc_status", "pch": build(tree)}}]
         )
         rsc = (response.get("responses") or [{}])[0].get("rsc")
         if rsc != 2004:
-            raise DaikinError(f"Unit rejected {groups} (rsc {rsc})")
+            raise DaikinError(f"Unit rejected {changes} (rsc {rsc})")
