@@ -1,0 +1,73 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Daikin Extra",
+        "description": "IP-Adresse des Daikin-WLAN-Adapters (dsiot-API).",
+        "data": {
+          "host": "Host",
+          "name": "Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Die Anlage antwortet nicht. Stimmt die Adresse, und hat der Adapter die dsiot-API?"
+    },
+    "abort": {
+      "already_configured": "Diese Anlage ist schon eingerichtet."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Daikin Extra",
+        "data": {
+          "scan_interval": "Abfrage alle … Sekunden"
+        }
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "vertical_position": {
+        "name": "Luft oben/unten",
+        "state": {
+          "highest": "Ganz oben",
+          "high": "Oben",
+          "middle": "Mitte",
+          "low": "Unten",
+          "lowest": "Ganz unten",
+          "swing": "Schwenken",
+          "ceiling": "Zur Decke"
+        }
+      },
+      "horizontal_position": {
+        "name": "Luft links/rechts",
+        "state": {
+          "far_left": "Ganz links",
+          "left": "Links",
+          "left_center": "Halb links",
+          "center": "Mitte",
+          "right_center": "Halb rechts",
+          "right": "Rechts",
+          "far_right": "Ganz rechts",
+          "swing": "Schwenken",
+          "intelligent_eye": "Intelligent Eye"
+        }
+      }
+    },
+    "switch": {
+      "mold_proof": {
+        "name": "Schimmelschutz"
+      }
+    },
+    "binary_sensor": {
+      "streamer": {
+        "name": "Streamer"
+      },
+      "powerful": {
+        "name": "Powerful"
+      }
+    }
+  }
+}

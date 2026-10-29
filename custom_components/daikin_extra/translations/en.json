@@ -1,0 +1,73 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Daikin Extra",
+        "description": "IP address of the Daikin Wi-Fi adapter (dsiot API).",
+        "data": {
+          "host": "Host",
+          "name": "Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "The unit does not respond. Check the address and that the adapter speaks the dsiot API."
+    },
+    "abort": {
+      "already_configured": "This unit is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Daikin Extra",
+        "data": {
+          "scan_interval": "Poll every … seconds"
+        }
+      }
+    }
+  },
+  "entity": {
+    "select": {
+      "vertical_position": {
+        "name": "Airflow up/down",
+        "state": {
+          "highest": "Highest",
+          "high": "High",
+          "middle": "Middle",
+          "low": "Low",
+          "lowest": "Lowest",
+          "swing": "Swing",
+          "ceiling": "Ceiling"
+        }
+      },
+      "horizontal_position": {
+        "name": "Airflow left/right",
+        "state": {
+          "far_left": "Far left",
+          "left": "Left",
+          "left_center": "Left of center",
+          "center": "Center",
+          "right_center": "Right of center",
+          "right": "Right",
+          "far_right": "Far right",
+          "swing": "Swing",
+          "intelligent_eye": "Intelligent Eye"
+        }
+      }
+    },
+    "switch": {
+      "mold_proof": {
+        "name": "Mold proof"
+      }
+    },
+    "binary_sensor": {
+      "streamer": {
+        "name": "Streamer"
+      },
+      "powerful": {
+        "name": "Powerful"
+      }
+    }
+  }
+}
